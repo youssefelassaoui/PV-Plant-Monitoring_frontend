@@ -62,7 +62,9 @@ function Basic() {
                 label="Nom d'utilisateur"
                 fullWidth
                 value={credentials.username}
-                onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                onChange={(e) =>
+                  setCredentials({ ...credentials, username: e.target.value })
+                }
               />
             </MDBox>
             <MDBox mb={2}>
@@ -71,7 +73,9 @@ function Basic() {
                 label="Mot de passe"
                 fullWidth
                 value={credentials.password}
-                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                onChange={(e) =>
+                  setCredentials({ ...credentials, password: e.target.value })
+                }
               />
             </MDBox>
 
@@ -84,7 +88,12 @@ function Basic() {
             )}
 
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth onClick={handleLogin}>
+              <MDButton
+                variant="gradient"
+                color="info"
+                fullWidth
+                onClick={handleLogin}
+              >
                 Se connecter
               </MDButton>
             </MDBox>

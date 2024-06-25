@@ -13,21 +13,35 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "App";
 
 // Material Dashboard 2 React Context Provider
 import { MaterialUIControllerProvider } from "context";
+import { AuthProvider } from "authContext";
+import { useAuth } from "authContext";
+import { rehydrateState } from "authContext";
 
 const container = document.getElementById("app");
 const root = createRoot(container);
 
+const Root = () => {
+  const { dispatch } = useAuth();
+
+  useEffect(() => {
+    rehydrateState(dispatch);
+  }, [dispatch]);
+
+  return <App />;
+};
 root.render(
   <BrowserRouter>
-    <MaterialUIControllerProvider>
-      <App />
-    </MaterialUIControllerProvider>
+    <AuthProvider>
+      <MaterialUIControllerProvider>
+        <Root />
+      </MaterialUIControllerProvider>
+    </AuthProvider>
   </BrowserRouter>
 );
