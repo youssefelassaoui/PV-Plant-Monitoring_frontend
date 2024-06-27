@@ -40,21 +40,32 @@ function Dashboard() {
             <Grid item xs={12} md={6} lg={4} key={system.id}>
               <Card>
                 <CardContent>
-                  <Typography variant="h5" component="div">
+                  <Typography variant="h5" component="div" gutterBottom>
                     {system.name}
                   </Typography>
-                  <Typography color="text.secondary">Capacity: {system.capacity} kW</Typography>
-                  <Typography color="text.secondary">
+                  <Typography variant="body2" color="text.secondary">
+                    Capacity: {system.capacity} kW
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
                     Inverter Type: {system.inverter_type}
                   </Typography>
-                  <Typography color="text.secondary">
+                  <Typography variant="body2" color="text.secondary">
                     Number of Panels: {system.number_of_panels}
                   </Typography>
-                  <Typography color="text.secondary">Technology: {system.technology}</Typography>
-                  <Typography color="text.secondary">
+                  <Typography variant="body2" color="text.secondary">
+                    Technology: {system.technology}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
                     Year of Installation: {system.year_of_installation}
                   </Typography>
-                  <Link to={`/system/${system.id}`}>View Details</Link>
+                  <Link
+                    to={`/system/${system.id}`}
+                    style={{ textDecoration: "none", marginTop: "1rem", display: "inline-block" }}
+                  >
+                    <Typography variant="button" color="primary">
+                      View Details
+                    </Typography>
+                  </Link>
                 </CardContent>
               </Card>
             </Grid>

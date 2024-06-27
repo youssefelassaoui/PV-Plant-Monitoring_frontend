@@ -1,95 +1,224 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
-import Cookies from "js-cookie"; // Add this import
-
-// Material Dashboard 2 React components
+import { Line } from "react-chartjs-2";
 import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-
-// Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import DataTable from "examples/Tables/DataTable";
+import Cookies from "js-cookie";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import {
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Chart,
+} from "chart.js";
+import zoomPlugin from "chartjs-plugin-zoom";
+import "chartjs-adapter-date-fns";
+
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  zoomPlugin
+);
 
 function SystemDetails() {
-  const [columns, setColumns] = useState([]);
-  const [rows, setRows] = useState([]);
-  const [system, setSystem] = useState(null);
+  const { id } = useParams();
+  const [systemData, setSystemData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/pvsystems/", {
+        const response = await axios.get(`http://localhost:8000/api/pvsystems/${id}/calculate/`, {
           headers: {
             Authorization: `Bearer ${Cookies.get("access")}`,
           },
         });
-        const data = response.data;
-        setSystem(data);
-
-        const cols = [
-          { Header: "Name", accessor: "name" },
-          { Header: "Capacity", accessor: "capacity" },
-          { Header: "Inverter Type", accessor: "inverter_type" },
-          { Header: "Number of Panels", accessor: "number_of_panels" },
-          { Header: "Technology", accessor: "technology" },
-          { Header: "Year of Installation", accessor: "year_of_installation" },
-        ];
-        setColumns(cols);
-
-        const rowsData = data.map((system) => ({
-          name: system.name,
-          capacity: `${system.capacity} kW`,
-          inverter_type: system.inverter_type,
-          number_of_panels: system.number_of_panels,
-          technology: system.technology,
-          year_of_installation: system.year_of_installation,
-        }));
-        setRows(rowsData);
+        setSystemData(response.data);
       } catch (error) {
-        console.error("Error fetching PV systems data:", error);
+        console.error("Error fetching system data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [id]);
+
+  const data = {
+    labels: systemData.map((data) => data.time),
+    datasets: [
+      {
+        label: "Calculated Power (W)",
+        data: systemData.map((data) => data.calculated_power),
+        borderColor: "rgb(75, 192, 192)",
+        tension: 0.1,
+      },
+      {
+        label: "Current T1 (A)",
+        data: systemData.map((data) => data.current_t1),
+        borderColor: "rgb(153, 102, 255)",
+        tension: 0.1,
+      },
+      {
+        label: "Current T2 (A)",
+        data: systemData.map((data) => data.current_t2),
+        borderColor: "rgb(255, 159, 64)",
+        tension: 0.1,
+      },
+      {
+        label: "Voltage (U_DC) (V)",
+        data: systemData.map((data) => data.voltage),
+        borderColor: "rgb(255, 99, 132)",
+        tension: 0.1,
+      },
+      {
+        label: "Solar Irradiance (GTI) (W/m²)",
+        data: systemData.map((data) => data.gti),
+        borderColor: "rgb(54, 162, 235)",
+        tension: 0.1,
+      },
+      {
+        label: "Temperature (Air_Temp) (°C)",
+        data: systemData.map((data) => data.air_temp),
+        borderColor: "rgb(255, 206, 86)",
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const options = {
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          unit: "minute",
+        },
+      },
+    },
+    plugins: {
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: "x",
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true,
+          },
+          mode: "x",
+        },
+      },
+    },
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        const elementIndex = elements[0].index;
+        const selected = systemData[elementIndex];
+        setSelectedData(selected);
+        setOpen(true);
+      }
+    },
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedData(null);
+  };
+
+  const columns = [
+    { field: "time", headerName: "Time", width: 200 },
+    { field: "calculated_power", headerName: "Calculated Power (W)", width: 200 },
+    { field: "current_t1", headerName: "Current T1 (A)", width: 150 },
+    { field: "current_t2", headerName: "Current T2 (A)", width: 150 },
+    { field: "voltage", headerName: "Voltage (V)", width: 150 },
+    { field: "gti", headerName: "Solar Irradiance (GTI) (W/m²)", width: 200 },
+    { field: "air_temp", headerName: "Temperature (°C)", width: 150 },
+  ];
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox pt={6} pb={3}>
-        <Grid container spacing={6}>
+      <MDBox py={3}>
+        <Grid container spacing={3}>
           <Grid item xs={12}>
             <Card>
               <CardContent>
                 <Typography variant="h5" component="div">
-                  PV Systems
+                  System {id} Details
                 </Typography>
+                <Line data={data} options={options} />
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12}>
             <Card>
-              <MDBox pt={3}>
-                <DataTable
-                  table={{ columns, rows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
-              </MDBox>
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  Data Table
+                </Typography>
+                <div style={{ height: 400, width: "100%" }}>
+                  <DataGrid
+                    rows={systemData.map((row, index) => ({ id: index, ...row }))}
+                    columns={columns}
+                    pageSize={10}
+                    rowsPerPageOptions={[10]}
+                    components={{ Toolbar: GridToolbar }}
+                  />
+                </div>
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
       </MDBox>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Data Point Details</DialogTitle>
+        <DialogContent>
+          {selectedData && (
+            <>
+              <Typography>Time: {selectedData.time}</Typography>
+              <Typography>Calculated Power: {selectedData.calculated_power} W</Typography>
+              <Typography>Current T1: {selectedData.current_t1} A</Typography>
+              <Typography>Current T2: {selectedData.current_t2} A</Typography>
+              <Typography>Voltage: {selectedData.voltage} V</Typography>
+              <Typography>Solar Irradiance (GTI): {selectedData.gti} W/m²</Typography>
+              <Typography>Temperature (Air_Temp): {selectedData.air_temp} °C</Typography>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* <Footer /> */}
     </DashboardLayout>
   );
 }
+
+SystemDetails.propTypes = {
+  id: PropTypes.string,
+};
 
 export default SystemDetails;

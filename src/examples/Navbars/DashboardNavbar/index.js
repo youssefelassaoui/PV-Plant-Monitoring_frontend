@@ -5,7 +5,6 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Icon from "@mui/material/Icon";
-import Menu from "@mui/material/Menu";
 import {
   useMaterialUIController,
   setTransparentNavbar,
@@ -15,9 +14,7 @@ import {
 import { useAuth, logout } from "authContext"; // Adjust the path as necessary
 
 import MDBox from "components/MDBox"; // Adjust the path as necessary
-import MDInput from "components/MDInput"; // Adjust the path as necessary
 import Breadcrumbs from "examples/Breadcrumbs"; // Adjust the path as necessary
-import NotificationItem from "examples/Items/NotificationItem"; // Adjust the path as necessary
 
 // Import the styles
 import {
@@ -25,16 +22,14 @@ import {
   navbarContainer,
   navbarRow,
   navbarIconButton,
-  navbarMobileMenu,
 } from "examples/Navbars/DashboardNavbar/styles";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
-  const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
-  const [openMenu, setOpenMenu] = useState(false);
+  const { miniSidenav, transparentNavbar, fixedNavbar, darkMode } = controller;
   const route = useLocation().pathname.split("/").slice(1);
-  const { state, dispatch: authDispatch } = useAuth();
+  const { dispatch: authDispatch } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,30 +50,9 @@ function DashboardNavbar({ absolute, light, isMini }) {
   }, [dispatch, fixedNavbar]);
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
-  const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
-  const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
-  const handleCloseMenu = () => setOpenMenu(false);
   const handleLogout = () => {
     logout(authDispatch, navigate);
   };
-
-  const renderMenu = () => (
-    <Menu
-      anchorEl={openMenu}
-      anchorReference={null}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left",
-      }}
-      open={Boolean(openMenu)}
-      onClose={handleCloseMenu}
-      sx={{ mt: 2 }}
-    >
-      <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
-      <NotificationItem icon={<Icon>podcasts</Icon>} title="Manage Podcast sessions" />
-      <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Payment successfully completed" />
-    </Menu>
-  );
 
   const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }) => ({
     color: () => {
@@ -102,48 +76,12 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </MDBox>
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <MDBox pr={1}>
-              <MDInput label="Search here" />
-            </MDBox>
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
+              <Link to="/regulator" style={{ textDecoration: "none" }}>
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
-                  <Icon sx={iconsStyle}>account_circle</Icon>
+                  <Icon sx={iconsStyle}>settings</Icon>
                 </IconButton>
               </Link>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarMobileMenu}
-                onClick={handleMiniSidenav}
-              >
-                <Icon sx={iconsStyle} fontSize="medium">
-                  {miniSidenav ? "menu_open" : "menu"}
-                </Icon>
-              </IconButton>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarIconButton}
-                onClick={handleConfiguratorOpen}
-              >
-                <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarIconButton}
-                aria-controls="notification-menu"
-                aria-haspopup="true"
-                variant="contained"
-                onClick={handleOpenMenu}
-              >
-                <Icon sx={iconsStyle}>notifications</Icon>
-              </IconButton>
-              {renderMenu()}
               <IconButton
                 size="small"
                 disableRipple
