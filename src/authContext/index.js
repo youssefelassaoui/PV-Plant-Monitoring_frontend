@@ -67,18 +67,18 @@ const login = async (dispatch, credentials) => {
       withCredentials: true,
     });
 
-    const { access, refresh } = response.data;
+    const { access, refresh, user_type } = response.data; // Assume user_type is part of the response
     const user = credentials.username;
 
     axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
 
-    dispatch({ type: "LOGIN", payload: { user, userType: "user", id: user } });
+    dispatch({ type: "LOGIN", payload: { user, userType: user_type, id: user } });
 
     // Set cookies with options
     Cookies.set("access", access, { path: "/", expires: 7 });
     Cookies.set("refresh", refresh, { path: "/", expires: 7 });
     Cookies.set("user", JSON.stringify(user), { path: "/", expires: 7 });
-    Cookies.set("userType", "user", { path: "/", expires: 7 });
+    Cookies.set("userType", user_type, { path: "/", expires: 7 });
     Cookies.set("id", user, { path: "/", expires: 7 });
 
     return true;

@@ -43,6 +43,7 @@ Chart.register(
 function SystemDetails() {
   const { id } = useParams();
   const [systemData, setSystemData] = useState([]);
+  const [systemScores, setSystemScores] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
 
@@ -60,7 +61,21 @@ function SystemDetails() {
       }
     };
 
+    const fetchScores = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/pvsystems/scores/", {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("access")}`,
+          },
+        });
+        setSystemScores(response.data);
+      } catch (error) {
+        console.error("Error fetching system scores:", error);
+      }
+    };
+
     fetchData();
+    fetchScores();
   }, [id]);
 
   const data = {
@@ -181,6 +196,29 @@ function SystemDetails() {
                   <DataGrid
                     rows={systemData.map((row, index) => ({ id: index, ...row }))}
                     columns={columns}
+                    pageSize={10}
+                    rowsPerPageOptions={[10]}
+                    components={{ Toolbar: GridToolbar }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  System Scores
+                </Typography>
+                <div style={{ height: 400, width: "100%" }}>
+                  <DataGrid
+                    rows={systemScores.map((row, index) => ({ id: index, ...row }))}
+                    columns={[
+                      { field: "name", headerName: "System Name", width: 200 },
+                      { field: "score", headerName: "Score", width: 100 },
+                      { field: "capacity", headerName: "Capacity (kW)", width: 150 },
+                      { field: "num_panels", headerName: "Number of Panels", width: 150 },
+                    ]}
                     pageSize={10}
                     rowsPerPageOptions={[10]}
                     components={{ Toolbar: GridToolbar }}

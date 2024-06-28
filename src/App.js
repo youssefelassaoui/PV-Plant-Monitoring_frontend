@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
-import Sidenav from "examples/Sidenav";
+import Sidenav from "examples/Sidenav"; // Ensure the path is correct
 import Configurator from "examples/Configurator";
 import theme from "assets/theme";
 import themeRTL from "assets/theme/theme-rtl";
@@ -82,7 +82,7 @@ export default function App() {
             <Route
               key={route.key}
               path={route.route}
-              element={<PrivateRoute element={route.component} />}
+              element={<PrivateRoute element={route.component} allowedRoles={route.allowedRoles} />}
             />
           );
         } else {

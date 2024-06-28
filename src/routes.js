@@ -1,8 +1,8 @@
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
 import SignIn from "layouts/authentication/sign-in";
+import SystemDetails from "layouts/SystemDetails";
+import UserManagement from "layouts/usersmanagement"; // Ensure the path is correct
 import Icon from "@mui/material/Icon";
-import SystemDetails from "layouts/SystemDetails"; // Make sure the path is correct
 
 const routes = [
   {
@@ -13,8 +13,8 @@ const routes = [
     route: "/dashboard",
     component: <Dashboard />,
     protected: true,
+    allowedRoles: ["admin", "user"],
   },
-
   {
     type: "route",
     key: "sign-in",
@@ -26,6 +26,15 @@ const routes = [
     key: "system-details",
     route: "/system/:id",
     component: <SystemDetails />,
+  },
+  {
+    type: "collapse",
+    name: "User Management",
+    key: "user-management",
+    route: "/usersmanagement",
+    component: <UserManagement />,
+    protected: true,
+    allowedRoles: ["admin"], // Only allow admin users
   },
 ];
 
