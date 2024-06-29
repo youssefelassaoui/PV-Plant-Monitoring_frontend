@@ -44,7 +44,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchSystems = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/pvsystems/", {
+        const response = await axios.get("https://geptest.pythonanywhere.com/api/pvsystems/", {
           headers: {
             Authorization: `Bearer ${Cookies.get("access")}`,
           },
@@ -57,7 +57,7 @@ function Dashboard() {
 
     const fetchTotalPowers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/totals-p_dc/", {
+        const response = await axios.get("https://geptest.pythonanywhere.com/api/totals-p_dc/", {
           headers: {
             Authorization: `Bearer ${Cookies.get("access")}`,
           },
@@ -70,7 +70,7 @@ function Dashboard() {
 
     const fetchSystemTotals = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/system-totals/", {
+        const response = await axios.get("https://geptest.pythonanywhere.com/api/system-totals/", {
           headers: {
             Authorization: `Bearer ${Cookies.get("access")}`,
           },

@@ -49,11 +49,14 @@ function SystemDetails() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/pvsystems/${id}/calculate/`, {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access")}`,
-          },
-        });
+        const response = await axios.get(
+          `https://geptest.pythonanywhere.com/api/pvsystems/${id}/calculate/`,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get("access")}`,
+            },
+          }
+        );
         setSystemData(
           response.data.map((item) => ({
             ...item,
