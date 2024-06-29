@@ -10,6 +10,7 @@ import {
   TextField,
   IconButton,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
@@ -29,6 +30,7 @@ function UsersManagement() {
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState({
     username: "",
     email: "",
@@ -49,6 +51,8 @@ function UsersManagement() {
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -171,13 +175,17 @@ function UsersManagement() {
               </MDBox>
               <MDBox pt={3}>
                 <div style={{ height: "66vh", width: "100%" }}>
-                  <DataGrid
-                    rows={users}
-                    columns={columns}
-                    pageSize={10}
-                    autoHeight={true}
-                    disableSelectionOnClick
-                  />
+                  {loading ? (
+                    <CircularProgress />
+                  ) : (
+                    <DataGrid
+                      rows={users}
+                      columns={columns}
+                      pageSize={10}
+                      autoHeight={true}
+                      disableSelectionOnClick
+                    />
+                  )}
                 </div>
               </MDBox>
             </Card>
