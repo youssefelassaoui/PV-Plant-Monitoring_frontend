@@ -11,6 +11,7 @@ import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -40,6 +41,9 @@ function Dashboard() {
   const [pvSystems, setPvSystems] = useState([]);
   const [systemPowers, setSystemPowers] = useState([]);
   const [systemTotals, setSystemTotals] = useState([]);
+  const [loadingSystems, setLoadingSystems] = useState(true);
+  const [loadingPowers, setLoadingPowers] = useState(true);
+  const [loadingTotals, setLoadingTotals] = useState(true);
 
   useEffect(() => {
     const fetchSystems = async () => {
@@ -52,6 +56,8 @@ function Dashboard() {
         setPvSystems(response.data);
       } catch (error) {
         console.error("Error fetching PV systems data:", error);
+      } finally {
+        setLoadingSystems(false);
       }
     };
 
@@ -65,6 +71,8 @@ function Dashboard() {
         setSystemPowers(response.data);
       } catch (error) {
         console.error("Error fetching total calculated power data:", error);
+      } finally {
+        setLoadingPowers(false);
       }
     };
 
@@ -78,6 +86,8 @@ function Dashboard() {
         setSystemTotals(response.data);
       } catch (error) {
         console.error("Error fetching system totals data:", error);
+      } finally {
+        setLoadingTotals(false);
       }
     };
 
@@ -191,40 +201,44 @@ function Dashboard() {
       <DashboardNavbar />
       <MDBox py={3}>
         <Grid container spacing={3}>
-          {pvSystems.map((system) => (
-            <Grid item xs={12} md={6} lg={4} key={system.id}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h5" component="div" gutterBottom>
-                    {system.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Capacity: {system.capacity} kW
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Inverter Type: {system.inverter_type}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Number of Panels: {system.number_of_panels}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Technology: {system.technology}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Year of Installation: {system.year_of_installation}
-                  </Typography>
-                  <Link
-                    to={`/system/${system.id}`}
-                    style={{ textDecoration: "none", marginTop: "1rem", display: "inline-block" }}
-                  >
-                    <Typography variant="button" color="primary">
-                      View Details
+          {loadingSystems ? (
+            <CircularProgress />
+          ) : (
+            pvSystems.map((system) => (
+              <Grid item xs={12} md={6} lg={4} key={system.id}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5" component="div" gutterBottom>
+                      {system.name}
                     </Typography>
-                  </Link>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
+                    <Typography variant="body2" color="text.secondary">
+                      Capacity: {system.capacity} kW
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Inverter Type: {system.inverter_type}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Number of Panels: {system.number_of_panels}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Technology: {system.technology}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Year of Installation: {system.year_of_installation}
+                    </Typography>
+                    <Link
+                      to={`/system/${system.id}`}
+                      style={{ textDecoration: "none", marginTop: "1rem", display: "inline-block" }}
+                    >
+                      <Typography variant="button" color="primary">
+                        View Details
+                      </Typography>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))
+          )}
         </Grid>
         <Grid container spacing={3} mt={3}>
           <Grid item xs={12} md={6} lg={4}>
@@ -233,10 +247,14 @@ function Dashboard() {
                 <Typography variant="h5" component="div" gutterBottom>
                   Total Power Distribution
                 </Typography>
-                {systemPowers.length > 0 && (
-                  <div style={{ width: "100%", height: "300px" }}>
-                    <Pie data={getPieData()} options={options} />
-                  </div>
+                {loadingPowers ? (
+                  <CircularProgress />
+                ) : (
+                  systemPowers.length > 0 && (
+                    <div style={{ width: "100%", height: "300px" }}>
+                      <Pie data={getPieData()} options={options} />
+                    </div>
+                  )
                 )}
               </CardContent>
             </Card>
@@ -247,10 +265,14 @@ function Dashboard() {
                 <Typography variant="h5" component="div" gutterBottom>
                   System Totals
                 </Typography>
-                {systemTotals.length > 0 && (
-                  <div style={{ width: "100%", height: "300px" }}>
-                    <Bar data={getBarData()} options={barOptions} />
-                  </div>
+                {loadingTotals ? (
+                  <CircularProgress />
+                ) : (
+                  systemTotals.length > 0 && (
+                    <div style={{ width: "100%", height: "300px" }}>
+                      <Bar data={getBarData()} options={barOptions} />
+                    </div>
+                  )
                 )}
               </CardContent>
             </Card>
