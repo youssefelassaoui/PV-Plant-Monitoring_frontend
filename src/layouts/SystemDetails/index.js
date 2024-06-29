@@ -12,6 +12,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Cookies from "js-cookie";
+import CircularProgress from "@mui/material/CircularProgress";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
@@ -43,6 +44,7 @@ Chart.register(
 function SystemDetails() {
   const { id } = useParams();
   const [systemData, setSystemData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
 
@@ -70,6 +72,8 @@ function SystemDetails() {
         );
       } catch (error) {
         console.error("Error fetching system data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -189,7 +193,7 @@ function SystemDetails() {
                 <Typography variant="h5" component="div">
                   System {id} Details
                 </Typography>
-                <Line data={data} options={options} />
+                {loading ? <CircularProgress /> : <Line data={data} options={options} />}
               </CardContent>
             </Card>
           </Grid>
@@ -199,15 +203,19 @@ function SystemDetails() {
                 <Typography variant="h5" component="div">
                   Data Table
                 </Typography>
-                <div style={{ height: 400, width: "100%" }}>
-                  <DataGrid
-                    rows={systemData.map((row, index) => ({ id: index, ...row }))}
-                    columns={columns}
-                    pageSize={10}
-                    rowsPerPageOptions={[10]}
-                    components={{ Toolbar: GridToolbar }}
-                  />
-                </div>
+                {loading ? (
+                  <CircularProgress />
+                ) : (
+                  <div style={{ height: 400, width: "100%" }}>
+                    <DataGrid
+                      rows={systemData.map((row, index) => ({ id: index, ...row }))}
+                      columns={columns}
+                      pageSize={10}
+                      rowsPerPageOptions={[10]}
+                      components={{ Toolbar: GridToolbar }}
+                    />
+                  </div>
+                )}
               </CardContent>
             </Card>
           </Grid>
