@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import axios from "axios";
 import { Line } from "react-chartjs-2";
 import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import Cookies from "js-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataContext } from "context";
 import {
   CategoryScale,
   LinearScale,
@@ -28,7 +26,6 @@ import {
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
 import "chartjs-adapter-date-fns";
-import { format } from "date-fns";
 
 Chart.register(
   CategoryScale,
@@ -44,43 +41,9 @@ Chart.register(
 
 function SystemDetails() {
   const { id } = useParams();
-  const [systemData, setSystemData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
+  const { systemData, loading } = useContext(DataContext);
   const [selectedData, setSelectedData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `https://geptest.pythonanywhere.com/api/pvsystems/${id}/calculate/`,
-          {
-            headers: {
-              Authorization: `Bearer ${Cookies.get("access")}`,
-            },
-          }
-        );
-        setSystemData(
-          response.data.map((item) => ({
-            ...item,
-            calculated_power: Number(item.calculated_power).toFixed(2),
-            current_t1: Number(item.current_t1).toFixed(2),
-            current_t2: Number(item.current_t2).toFixed(2),
-            voltage: Number(item.voltage).toFixed(2),
-            gti: Number(item.gti).toFixed(2),
-            air_temp: Number(item.air_temp).toFixed(2),
-            time: format(new Date(item.time), "yyyy-MM-dd HH:mm:ss"), // Format date
-          }))
-        );
-      } catch (error) {
-        console.error("Error fetching system data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [id]);
+  const [open, setOpen] = useState(false);
 
   const data = {
     labels: systemData.map((data) => data.time),

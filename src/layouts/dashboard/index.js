@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { Pie, Bar } from "react-chartjs-2";
-import Cookies from "js-cookie";
 import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 import CircularProgress from "@mui/material/CircularProgress";
+import { DataContext } from "context";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -38,75 +36,13 @@ ChartJS.register(
 );
 
 function Dashboard() {
-  const [pvSystems, setPvSystems] = useState([]);
-  const [systemPowers, setSystemPowers] = useState([]);
-  const [systemTotals, setSystemTotals] = useState([]);
-  const [loadingSystems, setLoadingSystems] = useState(true);
-  const [loadingPowers, setLoadingPowers] = useState(true);
-  const [loadingTotals, setLoadingTotals] = useState(true);
-
-  useEffect(() => {
-    const fetchSystems = async () => {
-      try {
-        const response = await axios.get("https://geptest.pythonanywhere.com/api/pvsystems/", {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access")}`,
-          },
-        });
-        setPvSystems(response.data);
-      } catch (error) {
-        console.error("Error fetching PV systems data:", error);
-      } finally {
-        setLoadingSystems(false);
-      }
-    };
-
-    const fetchTotalPowers = async () => {
-      try {
-        const response = await axios.get("https://geptest.pythonanywhere.com/api/totals-p_dc/", {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access")}`,
-          },
-        });
-        setSystemPowers(response.data);
-      } catch (error) {
-        console.error("Error fetching total calculated power data:", error);
-      } finally {
-        setLoadingPowers(false);
-      }
-    };
-
-    const fetchSystemTotals = async () => {
-      try {
-        const response = await axios.get("https://geptest.pythonanywhere.com/api/system-totals/", {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access")}`,
-          },
-        });
-        setSystemTotals(response.data);
-      } catch (error) {
-        console.error("Error fetching system totals data:", error);
-      } finally {
-        setLoadingTotals(false);
-      }
-    };
-
-    fetchSystems();
-    fetchTotalPowers();
-    fetchSystemTotals();
-  }, []);
+  const { pvSystems, systemPowers, systemTotals, loading } = useContext(DataContext);
 
   const getPieData = () => {
     const labels = systemPowers.map((system) => system.name);
     const data = systemPowers.map((system) => system.total_calculated_power);
     const totalPower = data.reduce((acc, curr) => acc + curr, 0);
-    const backgroundColor = [
-      "#FF6384", // Color for System 1
-      "#36A2EB", // Color for System 2
-      "#FFCE56", // Color for System 3
-    ];
-
-    const percentages = data.map((power) => ((power / totalPower) * 100).toFixed(2));
+    const backgroundColor = ["#FF6384", "#36A2EB", "#FFCE56"];
 
     return {
       labels,
@@ -118,7 +54,7 @@ function Dashboard() {
           hoverBackgroundColor: backgroundColor,
         },
       ],
-      percentages,
+      percentages: data.map((power) => ((power / totalPower) * 100).toFixed(2)),
     };
   };
 
@@ -179,7 +115,7 @@ function Dashboard() {
   };
 
   const barOptions = {
-    indexAxis: "x", // Ensure bars are horizontal
+    indexAxis: "x",
     plugins: {
       tooltip: {
         callbacks: {
@@ -200,84 +136,82 @@ function Dashboard() {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3}>
-        <Grid container spacing={3}>
-          {loadingSystems ? (
-            <CircularProgress />
-          ) : (
-            pvSystems.map((system) => (
-              <Grid item xs={12} md={6} lg={4} key={system.id}>
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <Grid container spacing={3}>
+              {pvSystems.map((system) => (
+                <Grid item xs={12} md={6} lg={4} key={system.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h5" component="div" gutterBottom>
+                        {system.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Capacity: {system.capacity} kW
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Inverter Type: {system.inverter_type}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Number of Panels: {system.number_of_panels}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Technology: {system.technology}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Year of Installation: {system.year_of_installation}
+                      </Typography>
+                      <Link
+                        to={`/system/${system.id}`}
+                        style={{
+                          textDecoration: "none",
+                          marginTop: "1rem",
+                          display: "inline-block",
+                        }}
+                      >
+                        <Typography variant="button" color="primary">
+                          View Details
+                        </Typography>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+            <Grid container spacing={3} mt={3}>
+              <Grid item xs={12} md={6} lg={4}>
                 <Card>
                   <CardContent>
                     <Typography variant="h5" component="div" gutterBottom>
-                      {system.name}
+                      Total Power Distribution
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Capacity: {system.capacity} kW
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Inverter Type: {system.inverter_type}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Number of Panels: {system.number_of_panels}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Technology: {system.technology}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Year of Installation: {system.year_of_installation}
-                    </Typography>
-                    <Link
-                      to={`/system/${system.id}`}
-                      style={{ textDecoration: "none", marginTop: "1rem", display: "inline-block" }}
-                    >
-                      <Typography variant="button" color="primary">
-                        View Details
-                      </Typography>
-                    </Link>
+                    {systemPowers.length > 0 && (
+                      <div style={{ width: "100%", height: "300px" }}>
+                        <Pie data={getPieData()} options={options} />
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </Grid>
-            ))
-          )}
-        </Grid>
-        <Grid container spacing={3} mt={3}>
-          <Grid item xs={12} md={6} lg={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5" component="div" gutterBottom>
-                  Total Power Distribution
-                </Typography>
-                {loadingPowers ? (
-                  <CircularProgress />
-                ) : (
-                  systemPowers.length > 0 && (
-                    <div style={{ width: "100%", height: "300px" }}>
-                      <Pie data={getPieData()} options={options} />
-                    </div>
-                  )
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6} lg={8}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5" component="div" gutterBottom>
-                  System Totals
-                </Typography>
-                {loadingTotals ? (
-                  <CircularProgress />
-                ) : (
-                  systemTotals.length > 0 && (
-                    <div style={{ width: "100%", height: "100%" }}>
-                      <Bar data={getBarData()} options={barOptions} />
-                    </div>
-                  )
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+              <Grid item xs={12} md={6} lg={8}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5" component="div" gutterBottom>
+                      System Totals
+                    </Typography>
+                    {systemTotals.length > 0 && (
+                      <div style={{ width: "100%", height: "300px" }}>
+                        <Bar data={getBarData()} options={barOptions} />
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </>
+        )}
       </MDBox>
       {/* <Footer /> */}
     </DashboardLayout>
