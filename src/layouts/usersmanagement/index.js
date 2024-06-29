@@ -18,6 +18,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import Cookies from "js-cookie";
+import moment from "moment"; // Import moment
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -48,7 +49,12 @@ function UsersManagement() {
           Authorization: `Bearer ${Cookies.get("access")}`,
         },
       });
-      setUsers(response.data);
+      setUsers(
+        response.data.map((user) => ({
+          ...user,
+          date_joined: moment(user.date_joined).format("YYYY-MM-DD HH:mm:ss"), // Format the date
+        }))
+      );
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
