@@ -204,7 +204,7 @@ function SystemDetails() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Card>
               <CardContent>
                 <Typography variant="h5" component="div">
@@ -226,7 +226,7 @@ function SystemDetails() {
                 </div>
               </CardContent>
             </Card>
-          </Grid>
+          </Grid> */}
         </Grid>
       </MDBox>
       <Dialog open={open} onClose={handleClose}>

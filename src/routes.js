@@ -32,6 +32,7 @@ const routes = [
     name: "User Management",
     key: "user-management",
     route: "/usersmanagement",
+    icon: <Icon fontSize="small">person</Icon>,
     component: <UserManagement />,
     protected: true,
     allowedRoles: ["admin"], // Only allow admin users

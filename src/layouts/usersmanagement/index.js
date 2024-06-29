@@ -224,7 +224,7 @@ function UsersManagement() {
           </DialogActions>
         </Dialog>
       )}
-      <Footer />
+      {/* <Footer /> */}
     </DashboardLayout>
   );
 }
