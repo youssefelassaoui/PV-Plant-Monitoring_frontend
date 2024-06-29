@@ -18,7 +18,7 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 import PrivateRoute from "authContext/PrivateRoute"; // Adjust the path as necessary
-import { AuthProvider, useAuth } from "authContext"; // Adjust the path as necessary
+import { useAuth } from "authContext"; // Adjust the path as necessary
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -34,8 +34,8 @@ export default function App() {
   } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
-  const { pathname } = useLocation();
   const { state } = useAuth();
+  const { pathname } = useLocation();
 
   useMemo(() => {
     const cacheRtl = createCache({
@@ -72,31 +72,27 @@ export default function App() {
   }, [pathname]);
 
   const getRoutes = (allRoutes) =>
-    Array.isArray(allRoutes)
-      ? allRoutes.map((route) => {
-          if (route.collapse) {
-            return getRoutes(route.collapse);
-          }
+    allRoutes.map((route) => {
+      if (route.collapse) {
+        return getRoutes(route.collapse);
+      }
 
-          if (route.route) {
-            if (route.protected) {
-              return (
-                <Route
-                  key={route.key}
-                  path={route.route}
-                  element={
-                    <PrivateRoute element={route.component} allowedRoles={route.allowedRoles} />
-                  }
-                />
-              );
-            } else {
-              return <Route key={route.key} path={route.route} element={route.component} />;
-            }
-          }
+      if (route.route) {
+        if (route.protected) {
+          return (
+            <Route
+              key={route.key}
+              path={route.route}
+              element={<PrivateRoute element={route.component} allowedRoles={route.allowedRoles} />}
+            />
+          );
+        } else {
+          return <Route key={route.key} path={route.route} element={route.component} />;
+        }
+      }
 
-          return null;
-        })
-      : [];
+      return null;
+    });
 
   const configsButton = (
     <MDBox
@@ -123,35 +119,8 @@ export default function App() {
   );
 
   return direction === "rtl" ? (
-    <AuthProvider>
-      <CacheProvider value={rtlCache}>
-        <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
-          <CssBaseline />
-          {layout === "dashboard" && (
-            <>
-              <Sidenav
-                color={sidenavColor}
-                brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                brandName="Material Dashboard 2"
-                routes={routes}
-                onMouseEnter={handleOnMouseEnter}
-                onMouseLeave={handleOnMouseLeave}
-              />
-              <Configurator />
-              {configsButton}
-            </>
-          )}
-          {layout === "vr" && <Configurator />}
-          <Routes>
-            {getRoutes(routes)}
-            <Route path="*" element={<Navigate to="/dashboard" />} />
-          </Routes>
-        </ThemeProvider>
-      </CacheProvider>
-    </AuthProvider>
-  ) : (
-    <AuthProvider>
-      <ThemeProvider theme={darkMode ? themeDark : theme}>
+    <CacheProvider value={rtlCache}>
+      <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
         <CssBaseline />
         {layout === "dashboard" && (
           <>
@@ -173,6 +142,29 @@ export default function App() {
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </ThemeProvider>
-    </AuthProvider>
+    </CacheProvider>
+  ) : (
+    <ThemeProvider theme={darkMode ? themeDark : theme}>
+      <CssBaseline />
+      {layout === "dashboard" && (
+        <>
+          <Sidenav
+            color={sidenavColor}
+            brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+            brandName="Material Dashboard 2"
+            routes={routes}
+            onMouseEnter={handleOnMouseEnter}
+            onMouseLeave={handleOnMouseLeave}
+          />
+          <Configurator />
+          {configsButton}
+        </>
+      )}
+      {layout === "vr" && <Configurator />}
+      <Routes>
+        {getRoutes(routes)}
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+      </Routes>
+    </ThemeProvider>
   );
 }

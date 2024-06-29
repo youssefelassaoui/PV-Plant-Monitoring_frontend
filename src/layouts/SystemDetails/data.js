@@ -11,7 +11,7 @@ function useSystemDetails() {
     const fetchSystem = async () => {
       try {
         const response = await axios.get(
-          `https://geptest.pythonanywhere.com/api/pvsystems/${id}/`,
+          `https://geptest.pythonanywhere.com /api/pvsystems/${id}/`,
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("access")}`,
