@@ -2,7 +2,6 @@ import React, { useReducer, useEffect, useMemo, useContext, useState } from "rea
 import PropTypes from "prop-types";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
 
 const initialState = {
   isAuthenticated: false,
@@ -67,18 +66,17 @@ const login = async (dispatch, credentials) => {
       withCredentials: true,
     });
 
-    const { access, refresh, user_type } = response.data; // Assume user_type is part of the response
+    const { access, refresh } = response.data;
     const user = credentials.username;
 
     axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
 
-    dispatch({ type: "LOGIN", payload: { user, userType: user_type, id: user } });
+    dispatch({ type: "LOGIN", payload: { user, userType: "user", id: user } });
 
-    // Set cookies with options
     Cookies.set("access", access, { path: "/", expires: 7 });
     Cookies.set("refresh", refresh, { path: "/", expires: 7 });
     Cookies.set("user", JSON.stringify(user), { path: "/", expires: 7 });
-    Cookies.set("userType", user_type, { path: "/", expires: 7 });
+    Cookies.set("userType", "user", { path: "/", expires: 7 });
     Cookies.set("id", user, { path: "/", expires: 7 });
 
     return true;
@@ -96,7 +94,6 @@ const signup = async (dispatch, userDetails) => {
 
     const { username, email } = userDetails;
 
-    // Auto-login after signup
     await login(dispatch, { username, email, password: userDetails.password });
 
     return true;
@@ -121,7 +118,7 @@ const rehydrateState = async (dispatch) => {
   const access = Cookies.get("access");
   if (access) {
     try {
-      const response = await axios.post("http://localhost:8000/api/token/verify/", {
+      await axios.post("http://localhost:8000/api/token/verify/", {
         token: access,
       });
 
@@ -133,13 +130,14 @@ const rehydrateState = async (dispatch) => {
 
       dispatch({ type: "LOGIN", payload: { user: JSON.parse(user), userType, id } });
 
-      // Ensure cookies are set again in case they were lost
       Cookies.set("userType", userType, { path: "/", expires: 7 });
       Cookies.set("id", id, { path: "/", expires: 7 });
     } catch (error) {
       console.error("Rehydration failed", error);
       dispatch({ type: "LOGOUT" });
     }
+  } else {
+    dispatch({ type: "LOGOUT" });
   }
 };
 

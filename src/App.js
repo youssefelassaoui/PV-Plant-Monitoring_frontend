@@ -1,10 +1,10 @@
-import { useMemo, useEffect, useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
-import Sidenav from "examples/Sidenav"; // Ensure the path is correct
+import Sidenav from "examples/Sidenav";
 import Configurator from "examples/Configurator";
 import theme from "assets/theme";
 import themeRTL from "assets/theme/theme-rtl";
@@ -18,7 +18,7 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 import PrivateRoute from "authContext/PrivateRoute"; // Adjust the path as necessary
-import { AuthProvider } from "authContext"; // Adjust the path as necessary
+import { AuthProvider, useAuth } from "authContext"; // Adjust the path as necessary
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -35,6 +35,7 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
+  const { state } = useAuth();
 
   useMemo(() => {
     const cacheRtl = createCache({
@@ -71,27 +72,31 @@ export default function App() {
   }, [pathname]);
 
   const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
-      if (route.collapse) {
-        return getRoutes(route.collapse);
-      }
+    Array.isArray(allRoutes)
+      ? allRoutes.map((route) => {
+          if (route.collapse) {
+            return getRoutes(route.collapse);
+          }
 
-      if (route.route) {
-        if (route.protected) {
-          return (
-            <Route
-              key={route.key}
-              path={route.route}
-              element={<PrivateRoute element={route.component} allowedRoles={route.allowedRoles} />}
-            />
-          );
-        } else {
-          return <Route key={route.key} path={route.route} element={route.component} />;
-        }
-      }
+          if (route.route) {
+            if (route.protected) {
+              return (
+                <Route
+                  key={route.key}
+                  path={route.route}
+                  element={
+                    <PrivateRoute element={route.component} allowedRoles={route.allowedRoles} />
+                  }
+                />
+              );
+            } else {
+              return <Route key={route.key} path={route.route} element={route.component} />;
+            }
+          }
 
-      return null;
-    });
+          return null;
+        })
+      : [];
 
   const configsButton = (
     <MDBox

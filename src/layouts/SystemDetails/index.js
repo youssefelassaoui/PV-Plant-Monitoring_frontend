@@ -43,7 +43,6 @@ Chart.register(
 function SystemDetails() {
   const { id } = useParams();
   const [systemData, setSystemData] = useState([]);
-  const [systemScores, setSystemScores] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
 
@@ -55,27 +54,23 @@ function SystemDetails() {
             Authorization: `Bearer ${Cookies.get("access")}`,
           },
         });
-        setSystemData(response.data);
+        setSystemData(
+          response.data.map((item) => ({
+            ...item,
+            calculated_power: Number(item.calculated_power).toFixed(2),
+            current_t1: Number(item.current_t1).toFixed(2),
+            current_t2: Number(item.current_t2).toFixed(2),
+            voltage: Number(item.voltage).toFixed(2),
+            gti: Number(item.gti).toFixed(2),
+            air_temp: Number(item.air_temp).toFixed(2),
+          }))
+        );
       } catch (error) {
         console.error("Error fetching system data:", error);
       }
     };
 
-    const fetchScores = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/pvsystems/scores/", {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access")}`,
-          },
-        });
-        setSystemScores(response.data);
-      } catch (error) {
-        console.error("Error fetching system scores:", error);
-      }
-    };
-
     fetchData();
-    fetchScores();
   }, [id]);
 
   const data = {
@@ -130,6 +125,15 @@ function SystemDetails() {
       },
     },
     plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.dataset.label || "";
+            const value = context.raw || 0;
+            return `${label}: ${Number(value).toFixed(2)}`;
+          },
+        },
+      },
       zoom: {
         pan: {
           enabled: true,
@@ -204,29 +208,6 @@ function SystemDetails() {
               </CardContent>
             </Card>
           </Grid>
-          {/* <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5" component="div">
-                  System Scores
-                </Typography>
-                <div style={{ height: 400, width: "100%" }}>
-                  <DataGrid
-                    rows={systemScores.map((row, index) => ({ id: index, ...row }))}
-                    columns={[
-                      { field: "name", headerName: "System Name", width: 200 },
-                      { field: "score", headerName: "Score", width: 100 },
-                      { field: "capacity", headerName: "Capacity (kW)", width: 150 },
-                      { field: "num_panels", headerName: "Number of Panels", width: 150 },
-                    ]}
-                    pageSize={10}
-                    rowsPerPageOptions={[10]}
-                    components={{ Toolbar: GridToolbar }}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </Grid> */}
         </Grid>
       </MDBox>
       <Dialog open={open} onClose={handleClose}>

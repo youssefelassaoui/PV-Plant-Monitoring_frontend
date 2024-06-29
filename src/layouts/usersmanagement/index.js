@@ -170,7 +170,7 @@ function UsersManagement() {
                 </MDButton>
               </MDBox>
               <MDBox pt={3}>
-                <div style={{ height: "70vh", width: "100%" }}>
+                <div style={{ height: "66vh", width: "100%" }}>
                   <DataGrid
                     rows={users}
                     columns={columns}
