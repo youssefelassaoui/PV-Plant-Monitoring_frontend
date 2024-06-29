@@ -28,6 +28,7 @@ import {
 } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
 import "chartjs-adapter-date-fns";
+import { format } from "date-fns";
 
 Chart.register(
   CategoryScale,
@@ -68,6 +69,7 @@ function SystemDetails() {
             voltage: Number(item.voltage).toFixed(2),
             gti: Number(item.gti).toFixed(2),
             air_temp: Number(item.air_temp).toFixed(2),
+            time: format(new Date(item.time), "yyyy-MM-dd HH:mm:ss"), // Format date
           }))
         );
       } catch (error) {
