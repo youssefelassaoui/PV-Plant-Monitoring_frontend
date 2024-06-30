@@ -12,7 +12,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { DataContext } from "context";
+import { DataContext } from "context/DataContext";
 import {
   CategoryScale,
   LinearScale,
@@ -41,12 +41,31 @@ Chart.register(
 
 function SystemDetails() {
   const { id } = useParams();
-  const { systemData, loading } = useContext(DataContext);
-  const [selectedData, setSelectedData] = useState(null);
+  const { fetchSystemDetails, loading } = useContext(DataContext);
+  const [systemData, setSystemData] = useState([]);
+  const [localLoading, setLocalLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+
+  useEffect(() => {
+    const getSystemDetails = async () => {
+      const data = await fetchSystemDetails(id);
+      setSystemData(data);
+      setLocalLoading(false);
+    };
+
+    if (!loading) {
+      getSystemDetails();
+    }
+  }, [id, loading, fetchSystemDetails]);
+
+  const formattedData = systemData.map((item) => ({
+    ...item,
+    formatted_time: new Date(item.time).toLocaleString(), // Add a formatted time field for DataGrid
+  }));
 
   const data = {
-    labels: systemData.map((data) => data.time),
+    labels: systemData.map((data) => new Date(data.time)), // Keep original Date object for the chart
     datasets: [
       {
         label: "Calculated Power (W)",
@@ -138,7 +157,7 @@ function SystemDetails() {
   };
 
   const columns = [
-    { field: "time", headerName: "Time", width: 200 },
+    { field: "formatted_time", headerName: "Time", width: 200 }, // Use formatted_time for DataGrid
     { field: "calculated_power", headerName: "Calculated Power (W)", width: 200 },
     { field: "current_t1", headerName: "Current T1 (A)", width: 150 },
     { field: "current_t2", headerName: "Current T2 (A)", width: 150 },
@@ -158,7 +177,7 @@ function SystemDetails() {
                 <Typography variant="h5" component="div">
                   System {id} Details
                 </Typography>
-                {loading ? <CircularProgress /> : <Line data={data} options={options} />}
+                {localLoading ? <CircularProgress /> : <Line data={data} options={options} />}
               </CardContent>
             </Card>
           </Grid>
@@ -168,12 +187,12 @@ function SystemDetails() {
                 <Typography variant="h5" component="div">
                   Data Table
                 </Typography>
-                {loading ? (
+                {localLoading ? (
                   <CircularProgress />
                 ) : (
                   <div style={{ height: 400, width: "100%" }}>
                     <DataGrid
-                      rows={systemData.map((row, index) => ({ id: index, ...row }))}
+                      rows={formattedData.map((row, index) => ({ id: index, ...row }))}
                       columns={columns}
                       pageSize={10}
                       rowsPerPageOptions={[10]}
@@ -191,7 +210,7 @@ function SystemDetails() {
         <DialogContent>
           {selectedData && (
             <>
-              <Typography>Time: {selectedData.time}</Typography>
+              <Typography>Time: {new Date(selectedData.time).toLocaleString()}</Typography>
               <Typography>Calculated Power: {selectedData.calculated_power} W</Typography>
               <Typography>Current T1: {selectedData.current_t1} A</Typography>
               <Typography>Current T2: {selectedData.current_t2} A</Typography>

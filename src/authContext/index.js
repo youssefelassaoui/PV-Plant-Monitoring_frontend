@@ -64,7 +64,7 @@ AuthProvider.propTypes = {
 const login = async (dispatch, credentials) => {
   try {
     const response = await axios.post(
-      "https://geptest.pythonanywhere.com/api/token/",
+      "https://https://brilliant-sfogliatella-655498.netlify.app/api/token/",
       credentials,
       {
         withCredentials: true,
@@ -95,7 +95,7 @@ const login = async (dispatch, credentials) => {
 const signup = async (dispatch, userDetails) => {
   try {
     const response = await axios.post(
-      "https://geptest.pythonanywhere.com/api/register/",
+      "https://https://brilliant-sfogliatella-655498.netlify.app/api/register/",
       userDetails,
       {
         withCredentials: true,
@@ -129,9 +129,12 @@ const rehydrateState = async (dispatch) => {
   const access = Cookies.get("access");
   if (access) {
     try {
-      const response = await axios.post("https://geptest.pythonanywhere.com/api/token/verify/", {
-        token: access,
-      });
+      const response = await axios.post(
+        "https://https://brilliant-sfogliatella-655498.netlify.app/api/token/verify/",
+        {
+          token: access,
+        }
+      );
 
       const user = Cookies.get("user");
       const userType = Cookies.get("userType");
@@ -141,6 +144,7 @@ const rehydrateState = async (dispatch) => {
 
       dispatch({ type: "LOGIN", payload: { user: JSON.parse(user), userType, id } });
 
+      // Ensure cookies are set again in case they were lost
       Cookies.set("userType", userType, { path: "/", expires: 7 });
       Cookies.set("id", id, { path: "/", expires: 7 });
     } catch (error) {
@@ -150,4 +154,4 @@ const rehydrateState = async (dispatch) => {
   }
 };
 
-export { AuthProvider, useAuth, login, signup, logout, rehydrateState };
+export { AuthProvider, AuthContext, useAuth, login, signup, logout, rehydrateState };

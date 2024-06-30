@@ -9,7 +9,6 @@ import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import CircularProgress from "@mui/material/CircularProgress";
-import { DataContext } from "context";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,6 +21,7 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
+import { DataContext } from "context/DataContext";
 
 ChartJS.register(
   CategoryScale,
@@ -42,7 +42,13 @@ function Dashboard() {
     const labels = systemPowers.map((system) => system.name);
     const data = systemPowers.map((system) => system.total_calculated_power);
     const totalPower = data.reduce((acc, curr) => acc + curr, 0);
-    const backgroundColor = ["#FF6384", "#36A2EB", "#FFCE56"];
+    const backgroundColor = [
+      "#FF6384", // Color for System 1
+      "#36A2EB", // Color for System 2
+      "#FFCE56", // Color for System 3
+    ];
+
+    const percentages = data.map((power) => ((power / totalPower) * 100).toFixed(2));
 
     return {
       labels,
@@ -54,7 +60,7 @@ function Dashboard() {
           hoverBackgroundColor: backgroundColor,
         },
       ],
-      percentages: data.map((power) => ((power / totalPower) * 100).toFixed(2)),
+      percentages,
     };
   };
 
@@ -115,7 +121,7 @@ function Dashboard() {
   };
 
   const barOptions = {
-    indexAxis: "x",
+    indexAxis: "x", // Ensure bars are horizontal
     plugins: {
       tooltip: {
         callbacks: {
