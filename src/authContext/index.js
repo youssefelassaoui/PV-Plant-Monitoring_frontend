@@ -63,9 +63,13 @@ AuthProvider.propTypes = {
 
 const login = async (dispatch, credentials) => {
   try {
-    const response = await axios.post("https://www.pythonanywhere.com/api/token/", credentials, {
-      withCredentials: true,
-    });
+    const response = await axios.post(
+      "https://geptest.pythonanywhere.com/api/token/",
+      credentials,
+      {
+        withCredentials: true,
+      }
+    );
 
     const { access, refresh, user_type } = response.data; // Assume user_type is part of the response
     const user = credentials.username;
@@ -90,9 +94,13 @@ const login = async (dispatch, credentials) => {
 
 const signup = async (dispatch, userDetails) => {
   try {
-    const response = await axios.post("https://www.pythonanywhere.com/api/register/", userDetails, {
-      withCredentials: true,
-    });
+    const response = await axios.post(
+      "https://geptest.pythonanywhere.com/api/register/",
+      userDetails,
+      {
+        withCredentials: true,
+      }
+    );
 
     const { username, email } = userDetails;
 
@@ -121,7 +129,7 @@ const rehydrateState = async (dispatch) => {
   const access = Cookies.get("access");
   if (access) {
     try {
-      const response = await axios.post("https://www.pythonanywhere.com/api/token/verify/", {
+      const response = await axios.post("https://geptest.pythonanywhere.com/api/token/verify/", {
         token: access,
       });
 
