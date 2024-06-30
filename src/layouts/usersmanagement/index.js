@@ -45,7 +45,7 @@ function UsersManagement() {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        "https://https://brilliant-sfogliatella-655498.netlify.app/api/users/",
+        "https://brilliant-sfogliatella-655498.netlify.app/api/users/",
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("access")}`,
@@ -78,7 +78,7 @@ function UsersManagement() {
     if (isEditing) {
       try {
         await axios.put(
-          `https://https://brilliant-sfogliatella-655498.netlify.app/api/users/${selectedUser.id}/`,
+          `https://brilliant-sfogliatella-655498.netlify.app/api/users/${selectedUser.id}/`,
           userDetails, // Use userDetails without password
           {
             headers: {
@@ -92,7 +92,7 @@ function UsersManagement() {
     } else {
       try {
         await axios.post(
-          "https://https://brilliant-sfogliatella-655498.netlify.app/api/register-user/",
+          "https://brilliant-sfogliatella-655498.netlify.app/api/register-user/",
           selectedUser,
           {
             headers: {
@@ -126,14 +126,11 @@ function UsersManagement() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(
-        `https://https://brilliant-sfogliatella-655498.netlify.app/api/users/${id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access")}`,
-          },
-        }
-      );
+      await axios.delete(`https://brilliant-sfogliatella-655498.netlify.app/api/users/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("access")}`,
+        },
+      });
       fetchUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
