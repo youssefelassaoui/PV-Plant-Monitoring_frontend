@@ -64,7 +64,7 @@ AuthProvider.propTypes = {
 const login = async (dispatch, credentials) => {
   try {
     const response = await axios.post(
-      "https://brilliant-sfogliatella-655498.netlify.app/api/token/",
+      "https://pv-systems-monitoring-test.netlify.app/api/token/",
       credentials,
       {
         withCredentials: true,
@@ -95,7 +95,7 @@ const login = async (dispatch, credentials) => {
 const signup = async (dispatch, userDetails) => {
   try {
     const response = await axios.post(
-      "https://brilliant-sfogliatella-655498.netlify.app/api/register/",
+      "https://pv-systems-monitoring-test.netlify.app/api/register/",
       userDetails,
       {
         withCredentials: true,
@@ -130,7 +130,7 @@ const rehydrateState = async (dispatch) => {
   if (access) {
     try {
       const response = await axios.post(
-        "https://brilliant-sfogliatella-655498.netlify.app/api/token/verify/",
+        "https://pv-systems-monitoring-test.netlify.app/api/token/verify/",
         {
           token: access,
         }
