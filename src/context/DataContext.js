@@ -15,7 +15,7 @@ const DataProvider = ({ children }) => {
     const fetchData = async () => {
       try {
         const responsePvSystems = await axios.get(
-          "http://geptest.pythonanywhere.com/api/pvsystems/",
+          "https://geptest.pythonanywhere.com/api/pvsystems/",
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("access")}`,
@@ -25,7 +25,7 @@ const DataProvider = ({ children }) => {
         setPvSystems(responsePvSystems.data);
 
         const responseTotalPowers = await axios.get(
-          "http://geptest.pythonanywhere.com/api/totals-p_dc/",
+          "https://geptest.pythonanywhere.com/api/totals-p_dc/",
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("access")}`,
@@ -35,7 +35,7 @@ const DataProvider = ({ children }) => {
         setSystemPowers(responseTotalPowers.data);
 
         const responseSystemTotals = await axios.get(
-          "http://geptest.pythonanywhere.com/api/system-totals/",
+          "https://geptest.pythonanywhere.com/api/system-totals/",
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("access")}`,
@@ -56,7 +56,7 @@ const DataProvider = ({ children }) => {
   const fetchSystemDetails = async (id) => {
     try {
       const response = await axios.get(
-        `http://geptest.pythonanywhere.com/api/pvsystems/${id}/calculate/`,
+        `https://geptest.pythonanywhere.com/api/pvsystems/${id}/calculate/`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("access")}`,

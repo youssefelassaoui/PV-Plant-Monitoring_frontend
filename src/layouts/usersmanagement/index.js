@@ -44,7 +44,7 @@ function UsersManagement() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://geptest.pythonanywhere.com/api/users/", {
+      const response = await axios.get("https://geptest.pythonanywhere.com/api/users/", {
         headers: {
           Authorization: `Bearer ${Cookies.get("access")}`,
         },
@@ -75,7 +75,7 @@ function UsersManagement() {
     if (isEditing) {
       try {
         await axios.put(
-          `http://geptest.pythonanywhere.com/api/users/${selectedUser.id}/`,
+          `https://geptest.pythonanywhere.com/api/users/${selectedUser.id}/`,
           userDetails, // Use userDetails without password
           {
             headers: {
@@ -88,7 +88,7 @@ function UsersManagement() {
       }
     } else {
       try {
-        await axios.post("http://geptest.pythonanywhere.com/api/register-user/", selectedUser, {
+        await axios.post("https://geptest.pythonanywhere.com/api/register-user/", selectedUser, {
           headers: {
             Authorization: `Bearer ${Cookies.get("access")}`,
           },
@@ -119,7 +119,7 @@ function UsersManagement() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://geptest.pythonanywhere.com/api/users/${id}/`, {
+      await axios.delete(`https://geptest.pythonanywhere.com/api/users/${id}/`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("access")}`,
         },
