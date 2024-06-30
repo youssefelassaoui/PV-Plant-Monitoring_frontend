@@ -63,13 +63,9 @@ AuthProvider.propTypes = {
 
 const login = async (dispatch, credentials) => {
   try {
-    const response = await axios.post(
-      "https://pv-systems-monitoring-test.netlify.app/api/token/",
-      credentials,
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.post("http://geptest.pythonanywhere.com/api/token/", credentials, {
+      withCredentials: true,
+    });
 
     const { access, refresh, user_type } = response.data; // Assume user_type is part of the response
     const user = credentials.username;
@@ -95,7 +91,7 @@ const login = async (dispatch, credentials) => {
 const signup = async (dispatch, userDetails) => {
   try {
     const response = await axios.post(
-      "https://pv-systems-monitoring-test.netlify.app/api/register/",
+      "http://geptest.pythonanywhere.com/api/register/",
       userDetails,
       {
         withCredentials: true,
@@ -129,12 +125,9 @@ const rehydrateState = async (dispatch) => {
   const access = Cookies.get("access");
   if (access) {
     try {
-      const response = await axios.post(
-        "https://pv-systems-monitoring-test.netlify.app/api/token/verify/",
-        {
-          token: access,
-        }
-      );
+      const response = await axios.post("http://geptest.pythonanywhere.com/api/token/verify/", {
+        token: access,
+      });
 
       const user = Cookies.get("user");
       const userType = Cookies.get("userType");

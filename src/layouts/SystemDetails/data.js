@@ -11,7 +11,7 @@ function useSystemDetails() {
     const fetchSystem = async () => {
       try {
         const response = await axios.get(
-          `https://pv-systems-monitoring-test.netlify.app /api/pvsystems/${id}/`,
+          `http://geptest.pythonanywhere.com /api/pvsystems/${id}/`,
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("access")}`,
