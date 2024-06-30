@@ -77,11 +77,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/regulator" style={{ textDecoration: "none" }}>
-                <IconButton sx={navbarIconButton} size="small" disableRipple>
-                  <Icon sx={iconsStyle}>settings</Icon>
-                </IconButton>
-              </Link>
+              <Link to="/regulator" style={{ textDecoration: "none" }}></Link>
               <IconButton
                 size="small"
                 disableRipple

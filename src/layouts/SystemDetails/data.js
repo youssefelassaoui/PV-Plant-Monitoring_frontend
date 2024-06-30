@@ -10,14 +10,11 @@ function useSystemDetails() {
   useEffect(() => {
     const fetchSystem = async () => {
       try {
-        const response = await axios.get(
-          `https://geptest.pythonanywhere.com /api/pvsystems/${id}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${Cookies.get("access")}`,
-            },
-          }
-        );
+        const response = await axios.get(`https://www.pythonanywhere.com /api/pvsystems/${id}/`, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("access")}`,
+          },
+        });
         setSystem(response.data);
       } catch (error) {
         console.error("Error fetching system data:", error);
